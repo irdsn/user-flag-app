@@ -12,7 +12,6 @@
 
 import asyncio
 import os
-import random
 import time
 from typing import Any, Dict, List, Tuple
 
@@ -27,7 +26,7 @@ from utils.logs_config import logger
 
 # .env loader
 try:
-    from dotenv import load_dotenv  # type: ignore
+    from dotenv import load_dotenv
 
     load_dotenv()
 except Exception:
@@ -52,29 +51,61 @@ def _env_int(key: str, default: int) -> int:
         return default
 
 
-async def _post_json_with_retry(client: httpx.AsyncClient, url: str, payload: Dict[str, Any], timeout_s: float, retries: int, *, retry_on: Tuple[int, ...] = (408, 429, 500, 502, 503, 504)) -> Dict[str, Any]:
+async def _post_json_with_retry(client, url: str, payload: dict, timeout_s: float = 1.0, retries: int = 3):
     """
-    POST JSON with simple exponential backoff and jitter.
+    Perform a POST request with JSON payload and retry mechanism.
 
-    Returns parsed JSON dict. On final failure, raises the last exception.
+    Compatible with both real HTTP clients (e.g. httpx.AsyncClient)
+    and AsyncMocks used in pytest.
+
+    Args:
+        client: HTTP client with an async .post() method.
+        url (str): Target URL.
+        payload (dict): JSON body to send.
+        timeout_s (float): Timeout between retries (in seconds).
+        retries (int): Number of retry attempts.
+
+    Returns:
+        dict: JSON-decoded response content.
+
+    Raises:
+        httpx.HTTPStatusError: When all attempts fail or non-200 status persists.
     """
-    attempt = 0
-    backoff = 0.1  # seconds
-    while True:
+    last_exc = None
+
+    for attempt in range(retries + 1):
         try:
-            resp = await client.post(url, json=payload, timeout=timeout_s)
-            if resp.status_code in retry_on:
-                raise httpx.HTTPStatusError(f"Retryable status: {resp.status_code}", request=resp.request, response=resp)
-            resp.raise_for_status()
-            return resp.json()
-        except Exception as exc:
-            attempt += 1
-            if attempt > retries:
-                raise exc
-            jitter = random.uniform(0, backoff)
-            sleep_s = backoff + jitter
-            await asyncio.sleep(sleep_s)
-            backoff = min(backoff * 2, 2.0)  # cap max backoff
+            resp = await client.post(url, json=payload)
+
+            # Check HTTP status
+            status_code = getattr(resp, "status_code", None)
+            if status_code != 200:
+                request = getattr(resp, "request", None)
+                if request is None:
+                    # Defensive guard: ensures Mypy and runtime consistency
+                    raise httpx.RequestError("Missing request in response")
+
+                raise httpx.HTTPStatusError(
+                    f"Non-200 response: {status_code or 'unknown'}",
+                    request=request,
+                    response=resp,
+                )
+
+            # Handle async/sync .json()
+            data = resp.json()
+            if asyncio.iscoroutine(data):
+                data = await data
+
+            return data
+
+        except Exception as e:
+            last_exc = e
+            if attempt < retries:
+                logger.warning(f"POST attempt {attempt + 1} failed: {e}. Retrying in {timeout_s}s...")
+                await asyncio.sleep(timeout_s)
+            else:
+                logger.error(f"POST failed after {retries + 1} attempts: {e}")
+                raise last_exc
 
 
 async def _process_row(sem: asyncio.Semaphore, client: httpx.AsyncClient, translation_url: str, scoring_url: str, timeout_s: float, retries: int, user_id: str, message: str) -> Tuple[str, float]:
@@ -183,7 +214,7 @@ if __name__ == "__main__":
     """
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    input_csv = os.getenv("INPUT_CSV", os.path.join(BASE_DIR, "inputs", "input_XL.csv"))
+    input_csv = os.getenv("INPUT_CSV", os.path.join(BASE_DIR, "inputs", "input_S.csv"))
 
     # Dynamically derive output name: abc.csv → abc_output.csv
     input_name = os.path.basename(input_csv)

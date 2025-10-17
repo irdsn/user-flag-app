@@ -1,0 +1,65 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment & secrets
+.env
+.env.*
+*.env
+!example.env
+!.env.example
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# System & OS artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+Thumbs.db
+*~
+*.orig
+
+# IDE / Editor configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build & packaging artifacts
+dist/
+build/
+*.egg-info/
+.eggs/
+MANIFEST
+
+# Logs, temp & runtime files
+*.log
+*.out
+*.bak
+*.tmp
+tmp/
+temp/
+
+# Test and coverage artifacts
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.cache/
+tests/__pycache__/
+reports/
+junit.xml
+
+# Docker and deployment
+*.pid
+*.tar
+*.lock
+docker-compose.override.yml

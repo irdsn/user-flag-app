@@ -16,7 +16,7 @@ import os
 ##################################################################################################
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-src = os.path.join(base_dir, "inputs", "input_XL.csv")
+src = os.path.join(base_dir, "inputs", "input_S.csv")
 tmp = os.path.join(base_dir, "inputs", "input_fixed.csv")
 
 ##################################################################################################

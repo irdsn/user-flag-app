@@ -1,3 +1,13 @@
+[tool.ruff]
+line-length = 500
+target-version = "py311"
+exclude = [".venv", "__pycache__", ".git", "outputs", "inputs", "logs"]
+fix = true
+
+[tool.ruff.lint]
+# Rules to check (E=pycodestyle, F=pyflakes, W=warnings, I=imports)
+select = ["E", "F", "W", "I"]
+
 [tool.black]
 line-length = 500
 target-version = ["py311"]
@@ -9,3 +19,26 @@ wrap-descriptions = 500
 pre-summary-newline = true
 make-summary-multi-line = true
 force-wrap = true
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+strict_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+show_error_codes = true
+pretty = true
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".", "src"
+]
+testpaths = ["tests"]
+addopts = "-ra -q --disable-warnings --asyncio-mode=auto --cov=src --cov=utils --cov-report=term-missing --cov-branch"
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+

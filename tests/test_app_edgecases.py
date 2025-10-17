@@ -9,14 +9,16 @@
 #                                            IMPORTS                                             #
 ##################################################################################################
 
+import asyncio
 import importlib.util
+import os
 import pathlib
 import sys
-import pytest
-import os
 import types
-import asyncio
+
 import httpx
+import pytest
+
 from src import user_flag
 from src.user_flag import _post_json_with_retry
 
@@ -25,6 +27,7 @@ from src.user_flag import _post_json_with_retry
 ##################################################################################################
 
 pytestmark = pytest.mark.asyncio
+
 
 async def test_metrics_before_any_run(test_client):
     """No pipeline executed yet → returns default message."""
@@ -91,8 +94,6 @@ async def test_post_json_with_retry_request_none(mocker):
         await _post_json_with_retry(client, "url", {}, timeout_s=0.1, retries=0)
 
 
-
-
 @pytest.mark.asyncio
 async def test_post_json_with_retry_all_attempts_fail(mocker):
     """All retries exhausted → raises final exception and logs error."""
@@ -140,5 +141,3 @@ def test_main_entrypoint(monkeypatch):
     spec.loader.exec_module(mod)
 
     assert called.get("executed") is True
-
-

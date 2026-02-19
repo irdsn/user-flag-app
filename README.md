@@ -7,13 +7,10 @@
 
 **UserFlagApp** is a high-throughput CSV→CSV pipeline that processes user messages, calls external services for **translation** and **content scoring**, and **aggregates per `user_id`** into a compact report (`user_id`, `total_messages`, `avg_score`). It exposes a **FastAPI** layer to trigger executions, retrieve **health** and **metrics**, and is designed for **concurrency**, **timeouts**, and **retries** configurable via environment variables.
 
----
-
-## Author
-
-Íñigo Rodríguez Sánchez  
-Sr. AI & Data Engineer
-
+> **Author:** Íñigo Rodríguez Sánchez  
+> **Role:** Sr. Data & AI Engineer  
+> **Contact:** [inigo.rodsan@gmail.com](mailto:inigo.rodsan@gmail.com)
+> 
 ---
 
 ## Table of Contents

@@ -7,11 +7,7 @@
 
 **UserFlagApp** is a high-throughput CSV→CSV pipeline that processes user messages, calls external services for **translation** and **content scoring**, and **aggregates per `user_id`** into a compact report (`user_id`, `total_messages`, `avg_score`). It exposes a **FastAPI** layer to trigger executions, retrieve **health** and **metrics**, and is designed for **concurrency**, **timeouts**, and **retries** configurable via environment variables.
 
-> **Author:** Íñigo Rodríguez Sánchez  
-> **Role:** Sr. Data & AI Engineer  
-> **Contact:** [inigo.rodsan@gmail.com](mailto:inigo.rodsan@gmail.com)
-> 
----
+> Developed by [Íñigo Rodríguez](https://github.com/irdsn) · Contact: [inigo.rodsan@gmail.com](mailto:inigo.rodsan@gmail.com)
 
 ## Table of Contents
 
@@ -22,8 +18,6 @@
 - [Tests & Coverage](#tests--coverage)
 - [Installation](#installation)
 - [Usage](#usage)
-
----
 
 ## Introduction
 
@@ -36,8 +30,6 @@
 
 The system focuses on **robustness** (streaming I/O, safe writes), **performance** (async concurrency), and **operational clarity** (FastAPI endpoints for `/health`, `/run`, `/metrics`), making it suitable as a reference implementation for content-moderation pipelines or as a scaffold to plug real services.
 
----
-
 ## Key Features
 
 - Modular architecture with clear separation of concerns between input handling, service simulation, and data aggregation.
@@ -49,8 +41,6 @@ The system focuses on **robustness** (streaming I/O, safe writes), **performance
 - Deterministic mock services for consistent testing and reproducibility.
 - Comprehensive unit and integration test coverage with Pytest.
 - Streamed I/O operations to handle large CSV datasets efficiently without excessive memory usage.
-
----
 
 ## Project Structure
 
@@ -106,8 +96,6 @@ user-flag-app/
 └── requirements.txt                   # Python dependencies list
 ```
 
----
-
 ## Script Overview
 
 ![Backend](https://img.shields.io/badge/Backend-FastAPI-teal)
@@ -124,8 +112,6 @@ Modules are organized by directory following the execution flow of the applicati
 | **utils/file_io.py**                  | Abstracts safe file operations (open, write, overwrite).                       | Manages I/O reliability across pipeline steps.                      |
 | **utils/logs_config.py**              | Initializes logging handlers, formatters, and rotation policies.               | Provides structured logging across modules.                         |
 | **app.py**                            | Entry point combining CLI and FastAPI server.                                  | Launches pipeline or exposes it as a web service.                   |
-
----
 
 ## Configuration
 
@@ -151,8 +137,6 @@ These parameters control input/output paths, concurrency settings, and service t
 - The `.env` file at the project root is automatically loaded by `env_loader.py` when the app starts.  
 - Logging configuration (`utils/logs_config.py`) respects the `LOG_LEVEL` and outputs to both console and file handlers.
 - The Makefile supports running the application with preloaded `.env` configuration (`make run`).
-
----
 
 ## Tests & Coverage
 
@@ -231,14 +215,10 @@ TOTAL                      205      9     42      7    94%
 
 ```
 
----
-
 ## Installation & Usage
 
 UserFlagApp is a standalone Python 3.11+ project.  
 It can be executed either as a **CLI pipeline** or through a **FastAPI server** exposing endpoints for `/health`, `/run`, and `/metrics`.
-
----
 
 ### 1. Clone the repository
 
@@ -246,8 +226,6 @@ It can be executed either as a **CLI pipeline** or through a **FastAPI server** 
 git clone https://github.com/<your-username>/user-flag-app.git
 cd user-flag-app
 ```
-
----
 
 ### 2. Set up the environment
 
@@ -268,8 +246,6 @@ Alternatively, using Poetry:
 poetry install
 ```
 
----
-
 ### 3. Configure environment variables
 
 Copy the provided `.env` file and adjust parameters as needed:
@@ -279,8 +255,6 @@ cp .env.example .env
 ```
 
 You can modify `INPUT_PATH`, `OUTPUT_PATH`, `LOG_LEVEL`, and concurrency parameters.
-
----
 
 ### Run as CLI
 
@@ -293,7 +267,6 @@ python -m src.user_flag
 The output will be generated under the `outputs/` directory as defined in `.env`.
 
 > ***Before running**: Start both simulator APIs with `uvicorn apis.translation_sim:app --port 8001` and `uvicorn apis.scoring_sim:app --port 8002`, or simply run `make run` to launch all three services (translation, scoring, and main FastAPI) together.
----
 
 ### Run FastAPI
 
